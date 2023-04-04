@@ -88,6 +88,70 @@ static u8 decomp_3bit(const u8 *in, u8 *out) {
 	return 26;
 }
 
+static u8 decomp_rle(const u8 *in, u8 *out) {
+	const u8 * const orig = in;
+	u8 wrote = 0, cur, buf, n = 0, prev, i, run;
+
+	prev = buf = *in++;
+	prev &= 15;
+	buf >>= 4;
+	n = 1;
+
+	while (1) {
+		#define get() \
+		if (!n) { \
+			buf = *in++; \
+			cur = buf & 15; \
+			buf >>= 4; \
+			n = 1; \
+		} else { \
+			cur = buf & 15; \
+			n = 0; \
+		}
+
+		get();
+
+		if (cur != prev) {
+			*out++ = prev;
+			wrote++;
+
+			if (wrote == 63) {
+				*out++ = cur;
+				wrote++;
+				break;
+			}
+			prev = cur;
+		} else {
+			get();
+			run = cur;
+			while (cur == 15) {
+				get();
+				run += cur;
+			}
+			run += 2;
+
+			for (i = 0; i < run; i++) {
+				*out++ = prev;
+			}
+			wrote += run;
+			if (wrote == 64)
+				break;
+
+			get();
+			prev = cur;
+			if (wrote == 63) {
+				*out++ = cur;
+				wrote++;
+				break;
+			}
+		}
+
+		#undef get
+	}
+
+	return in - orig;
+}
+
 static u8 decomp_hline(const u8 *in, u8 *out) {
 	const u8 * const orig = in;
 
@@ -193,6 +257,7 @@ static const mfunc methods[NUM_METHODS] = {
 	decomp_1bit,
 	decomp_2bit,
 	decomp_3bit,
+	decomp_rle,
 	decomp_hline,
 	decomp_vline,
 	decomp_commonbyte,
@@ -208,7 +273,7 @@ void stc1_decompress(const u8 *in, u8 *out) {
 
 	for (t = 0; t < numtiles; t++) {
 		const u8 mbyte = *in++;
-		const u8 m = mbyte & 7;
+		const u8 m = mbyte & 15;
 
 		if (m >= M_COMMONBYTE) {
 			// already in CHR format

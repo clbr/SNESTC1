@@ -21,6 +21,7 @@ const char methodstrs[NUM_METHODS][16] = {
 	"1bit",
 	"2bit",
 	"3bit",
+	"rle",
 	"hline",
 	"vline",
 	"commonbyte",
@@ -169,6 +170,77 @@ static u8 comp_3bit(const u8 *in, u8 *out, const u8 cols[]) {
 	}
 
 	return 27;
+}
+
+static u8 writerun(const u8 val, u8 run, u8 *buf, u8 *n, u8 *out) {
+	#define put(arg) \
+		if (*n) { \
+			*out++ = *buf | arg << 4; \
+			*n = 0; \
+		} else { \
+			*buf = arg; \
+			*n = 1; \
+		}
+
+	if (run == 1) {
+		put(val);
+		if (!*n)
+			return 1;
+		return 0;
+	}
+
+	const u8 * const origout = out;
+
+	put(val);
+	put(val);
+
+	run -= 2;
+
+	while (1) {
+		if (run >= 15) {
+			put(15);
+			run -= 15;
+		} else {
+			put(run);
+			break;
+		}
+	}
+
+	#undef put
+
+	return out - origout;
+}
+
+static u8 comp_rle(const u8 *in, u8 *out) {
+	const u8 * const origout = out;
+	u8 i;
+	u8 prev = in[0], run = 1;
+	u8 outbuf = 0, n = 0;
+	*out++ = M_RLE;
+
+	for (i = 1; i < 64; i++) {
+		if (in[i] != prev) {
+			out += writerun(prev, run, &outbuf, &n, out);
+			if (out - origout >= 32)
+				return 0xff;
+
+			prev = in[i];
+			run = 1;
+		} else {
+			run++;
+		}
+
+		if (i == 63) {
+			out += writerun(prev, run, &outbuf, &n, out);
+			if (out - origout >= 32)
+				return 0xff;
+		}
+	}
+
+	if (n)
+		*out++ = outbuf;
+
+	return out - origout;
 }
 
 static u8 comp_line_inner(u8 *out, u32 lines[]) {
@@ -364,6 +436,7 @@ u16 stc1_compress(const u8 *in, u8 *out, const u32 len) {
 			complens[M_2BIT] = comp_2bit(in, comps[M_2BIT], cols);
 		else if (numcols <= 8)
 			complens[M_3BIT] = comp_3bit(in, comps[M_3BIT], cols);
+		complens[M_RLE] = comp_rle(in, comps[M_RLE]);
 		complens[M_HLINE] = comp_hline(in, comps[M_HLINE]);
 		complens[M_VLINE] = comp_vline(in, comps[M_VLINE]);
 		if (numcols > 8) {

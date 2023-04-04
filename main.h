@@ -34,6 +34,7 @@ enum {
 	M_1BIT,
 	M_2BIT,
 	M_3BIT,
+	M_RLE,
 	M_HLINE,
 	M_VLINE,
 	M_COMMONBYTE,
