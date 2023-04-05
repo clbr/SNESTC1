@@ -1,4 +1,4 @@
-.PHONY: all clean copy
+.PHONY: all clean
 
 FILES = $(wildcard *.c)
 OBJS = $(FILES:.c=.o)
