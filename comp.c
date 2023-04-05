@@ -25,6 +25,7 @@ const char methodstrs[NUM_METHODS][16] = {
 	"hline",
 	"vline",
 	"commonbyte",
+	"ancestor",
 	"uncompressed"
 };
 
@@ -386,6 +387,76 @@ static u8 comp_commonbyte(const u8 chr[], u8 *out) {
 	return 6 + 32 - highestcount;
 }
 
+static u8 comp_ancestor(const u16 t, const u8 chr[], u8 *out) {
+
+	const u8 * const orig = out;
+	u16 i;
+	u16 best = 0xffff;
+	u32 bestval = 0;
+	u8 bestcount = 0;
+	const u8 * const me = &chr[t * 32];
+	u8 b, matches;
+	u32 val;
+
+	for (i = 0; i < t; i++) {
+		matches = val = 0;
+		for (b = 0; b < 32; b++) {
+			if (chr[i * 32 + b] == me[b]) {
+				matches++;
+			} else {
+				val |= 1 << b;
+			}
+		}
+
+		if (matches > bestcount) {
+			bestcount = matches;
+			best = i;
+			bestval = val;
+		}
+	}
+
+	if (bestcount < 5)
+		return 0xff; // not compressible
+
+	u8 summary = 0;
+	if (bestval & 0xff)
+		summary |= 1;
+	if (bestval & 0xff00)
+		summary |= 2;
+	if (bestval & 0xff0000)
+		summary |= 4;
+	if (bestval & 0xff000000)
+		summary |= 8;
+
+	*out++ = M_ANCESTOR | summary << 4;
+
+	u16 dist = t - best - 1;
+	while (dist >= 255) {
+		*out++ = 255;
+		dist -= 255;
+	}
+	*out++ = dist;
+
+	if (summary & 1)
+		*out++ = bestval;
+	if (summary & 2)
+		*out++ = bestval >> 8;
+	if (summary & 4)
+		*out++ = bestval >> 16;
+	if (summary & 8)
+		*out++ = bestval >> 24;
+
+	for (b = 0; b < 32; b++) {
+		if (chr[best * 32 + b] != me[b])
+			*out++ = me[b];
+	}
+
+	if (out - orig >= 32)
+		return 0xff;
+
+	return out - orig;
+}
+
 static u8 comp_uncompressed(const u8 chr[], u8 *out) {
 	*out++ = M_UNCOMPRESSED;
 	memcpy(out, chr, 32);
@@ -410,7 +481,7 @@ static u8 countcolors(const u8 *in, u8 *cols) {
 	return sum;
 }
 
-u16 stc1_compress(const u8 *in, u8 *out, const u32 len) {
+u16 stc1_compress(const u8 *in, const u8 *chr, u8 *out, const u32 len) {
 	const u8 * const orig = out;
 	u8 comps[NUM_METHODS][33], complens[NUM_METHODS];
 
@@ -439,13 +510,15 @@ u16 stc1_compress(const u8 *in, u8 *out, const u32 len) {
 		complens[M_RLE] = comp_rle(in, comps[M_RLE]);
 		complens[M_HLINE] = comp_hline(in, comps[M_HLINE]);
 		complens[M_VLINE] = comp_vline(in, comps[M_VLINE]);
+
+		if (t)
+			complens[M_ANCESTOR] = comp_ancestor(t, chr, comps[M_ANCESTOR]);
+
 		if (numcols > 8) {
-			u8 chr[32];
-			tochr(in, chr);
 			complens[M_COMMONBYTE] =
-				comp_commonbyte(chr, comps[M_COMMONBYTE]);
+				comp_commonbyte(chr + t * 32, comps[M_COMMONBYTE]);
 			complens[M_UNCOMPRESSED] =
-				comp_uncompressed(chr, comps[M_UNCOMPRESSED]);
+				comp_uncompressed(chr + t * 32, comps[M_UNCOMPRESSED]);
 		}
 
 		u8 i;

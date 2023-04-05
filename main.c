@@ -78,8 +78,10 @@ static u32 readpng(FILE *f, u8 *data) {
 
 int main(int argc, char **argv) {
 
-	u8 in[USHRT_MAX * 2], comp[USHRT_MAX], decomp[USHRT_MAX * 2],
-		chr[USHRT_MAX];
+	#define MAXBYTES (64 * 1024)
+
+	u8 in[MAXBYTES * 2], comp[MAXBYTES], decomp[MAXBYTES * 2],
+		chr[MAXBYTES];
 
 	char namebuf[PATH_MAX];
 	const char *name;
@@ -107,7 +109,7 @@ int main(int argc, char **argv) {
 		tochr(&in[i], &chr[c]);
 	}
 
-	const u32 complen = stc1_compress(in, comp, inlen);
+	const u32 complen = stc1_compress(in, chr, comp, inlen);
 	printf("Compressed to %u (%.2f%%)\n", complen, complen * 100.0f / (inlen / 2));
 
 	stc1_decompress(comp, decomp);

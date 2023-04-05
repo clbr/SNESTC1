@@ -26,7 +26,7 @@
 void die(const char fmt[], ...);
 void tochr(const u8 *in, u8 * const out);
 
-u16 stc1_compress(const u8 *in, u8 *out, const u32 len);
+u16 stc1_compress(const u8 *in, const u8 *chr, u8 *out, const u32 len);
 void stc1_decompress(const u8 *in, u8 *out);
 
 enum {
@@ -38,6 +38,7 @@ enum {
 	M_HLINE,
 	M_VLINE,
 	M_COMMONBYTE,
+	M_ANCESTOR,
 	M_UNCOMPRESSED,
 
 	NUM_METHODS,
