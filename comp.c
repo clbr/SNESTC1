@@ -514,9 +514,12 @@ u16 stc1_compress(const u8 *in, const u8 *chr, u8 *out, const u32 len) {
 		if (t)
 			complens[M_ANCESTOR] = comp_ancestor(t, chr, comps[M_ANCESTOR]);
 
-		if (numcols > 8) {
+		if (numcols > 2) {
 			complens[M_COMMONBYTE] =
 				comp_commonbyte(chr + t * 32, comps[M_COMMONBYTE]);
+		}
+
+		if (numcols > 8) {
 			complens[M_UNCOMPRESSED] =
 				comp_uncompressed(chr + t * 32, comps[M_UNCOMPRESSED]);
 		}
