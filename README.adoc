@@ -1,17 +1,15 @@
 SNES tile compression 1
 =======================
 
-This was an attempt to get better tile data compression, without
-going all the way into entropy coding slowness. At the time it
-doesn't compress well enough to continue with and do the SNES-side
-decompressors.
+This is an attempt to get better tile data compression, without
+going all the way into entropy coding slowness.
 
-It beats LZ4 by 5-15%, and since it currently compresses one tile at
+It beats LZ4 by 8-15%, and since it currently compresses one tile at
 a time, SNESTC1 data can be re-compressed to make it even smaller.
 It should still decompress faster than gzip even when combined with
-LZ4, but I was hoping for smaller sizes.
+LZ4/LZO.
 
-It does beat one solution commonly used in the SNES commercial era,
+It also beats one solution commonly used in the SNES commercial era,
 RNC ProPack, but then so do many others.
 
 Comparison on one game's BG graphics, 1943680 bytes total:
@@ -21,9 +19,9 @@ Comparison on one game's BG graphics, 1943680 bytes total:
 |Algo		| Compressed size	| %
 |LZ4HC		| 1389504		| 71
 |LZO		| 1323101		| 68
-|SNESTC1	| 1321584		| 68
-|SNESTC1 + LZ4	| 1236522		| 64
 |gzip		| 1195581		| 61
-|SNESTC1 + LZO	| 1190123		| 61
-|SNESTC1 + gzip	| 1096278		| 56
+|SNESTC1	| 1185733		| 61
+|SNESTC1 + LZ4	| 1174945		| 60
+|SNESTC1 + gzip	| 1086042		| 56
+|SNESTC1 + LZO	| 1078091		| 55
 |============================================
