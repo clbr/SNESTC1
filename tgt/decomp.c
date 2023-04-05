@@ -47,42 +47,7 @@ u8 decomp_1bit(const u8 *in, u8 *out);
 u8 decomp_2bit(const u8 *in, u8 *out);
 u8 decomp_3bit(const u8 *in, u8 *out);
 u8 decomp_rle(const u8 *in, u8 *out);
-
-static u8 decomp_hline(const u8 *in, u8 *out) {
-	const u8 * const orig = in;
-
-	const u8 val = *in++;
-	u8 highline[4], i;
-
-	memcpy(highline, in, 4);
-	in += 4;
-
-	for (i = 0; i < 8; i++) {
-		if (val & (1 << i)) {
-			*out++ = highline[0] & 15;
-			*out++ = highline[0] >> 4;
-			*out++ = highline[1] & 15;
-			*out++ = highline[1] >> 4;
-			*out++ = highline[2] & 15;
-			*out++ = highline[2] >> 4;
-			*out++ = highline[3] & 15;
-			*out++ = highline[3] >> 4;
-		} else {
-			*out++ = in[0] & 15;
-			*out++ = in[0] >> 4;
-			*out++ = in[1] & 15;
-			*out++ = in[1] >> 4;
-			*out++ = in[2] & 15;
-			*out++ = in[2] >> 4;
-			*out++ = in[3] & 15;
-			*out++ = in[3] >> 4;
-
-			in += 4;
-		}
-	}
-
-	return in - orig;
-}
+u8 decomp_hline(const u8 *in, u8 *out);
 
 static u8 decomp_vline(const u8 *in, u8 *out) {
 	const u8 * const orig = in;
