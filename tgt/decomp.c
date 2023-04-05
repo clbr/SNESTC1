@@ -43,76 +43,10 @@ enum {
 };
 
 u8 decomp_flat(const u8 *in, u8 *out);
-
 u8 decomp_1bit(const u8 *in, u8 *out);
-
 u8 decomp_2bit(const u8 *in, u8 *out);
-
 u8 decomp_3bit(const u8 *in, u8 *out);
-
-static u8 decomp_rle(const u8 *in, u8 *out) {
-	const u8 * const orig = in;
-	u8 wrote = 0, cur, buf, n = 0, prev, i, run;
-
-	prev = buf = *in++;
-	prev &= 15;
-	buf >>= 4;
-	n = 1;
-
-	while (1) {
-		#define get() \
-		if (!n) { \
-			buf = *in++; \
-			cur = buf & 15; \
-			buf >>= 4; \
-			n = 1; \
-		} else { \
-			cur = buf & 15; \
-			n = 0; \
-		}
-
-		get();
-
-		if (cur != prev) {
-			*out++ = prev;
-			wrote++;
-
-			if (wrote == 63) {
-				*out++ = cur;
-				wrote++;
-				break;
-			}
-			prev = cur;
-		} else {
-			get();
-			run = cur;
-			while (cur == 15) {
-				get();
-				run += cur;
-			}
-			run += 2;
-
-			for (i = 0; i < run; i++) {
-				*out++ = prev;
-			}
-			wrote += run;
-			if (wrote == 64)
-				break;
-
-			get();
-			prev = cur;
-			if (wrote == 63) {
-				*out++ = cur;
-				wrote++;
-				break;
-			}
-		}
-
-		#undef get
-	}
-
-	return in - orig;
-}
+u8 decomp_rle(const u8 *in, u8 *out);
 
 static u8 decomp_hline(const u8 *in, u8 *out) {
 	const u8 * const orig = in;
