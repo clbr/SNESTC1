@@ -18,7 +18,7 @@ int main() {
 
 	cnt = src[0] | src[1] << 8;
 	cnt *= 32;
-	fwrite(dst, 1, cnt, stdout);
+	fwrite(dst, 1, cnt, stderr);
 
 	return 0;
 }
