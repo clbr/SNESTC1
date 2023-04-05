@@ -5,7 +5,7 @@ unsigned char src[22 * 1024], dst[32 * 1024];
 
 int main() {
 	int a;
-	unsigned int cnt;
+	unsigned int cnt = 0;
 
 	while (1) {
 		a = getc(stdin);
@@ -17,6 +17,7 @@ int main() {
 	stc1_decompress(src, dst);
 
 	cnt = src[0] | src[1] << 8;
+	cnt *= 32;
 	fwrite(dst, 1, cnt, stdout);
 
 	return 0;

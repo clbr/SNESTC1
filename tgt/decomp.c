@@ -277,7 +277,7 @@ static u8 decomp_commonbyte(const u8 *in, u8 *out) {
 	in += 4;
 
 	for (i = 0; i < 32; i++) {
-		if (bits & (1 << i))
+		if (bits & (1UL << i))
 			*out++ = cur;
 		else
 			*out++ = *in++;
