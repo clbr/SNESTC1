@@ -48,30 +48,7 @@ u8 decomp_1bit(const u8 *in, u8 *out);
 
 u8 decomp_2bit(const u8 *in, u8 *out);
 
-static u8 decomp_3bit(const u8 *in, u8 *out) {
-	u8 tab[8], i, cur = 0, j;
-	u16 used;
-	u32 val = 0;
-	memcpy(&used, in, 2);
-	in += 2;
-
-	for (i = 0; i < 16; i++) {
-		if (used & (1 << i))
-			tab[cur++] = i;
-	}
-
-	for (i = 0; i < 16; i += 2) {
-		memcpy(&val, in, 3);
-		in += 3;
-
-		for (j = 0; j < 16; j += 2) {
-			*out++ = tab[val & 7];
-			val >>= 3;
-		}
-	}
-
-	return 26;
-}
+u8 decomp_3bit(const u8 *in, u8 *out);
 
 static u8 decomp_rle(const u8 *in, u8 *out) {
 	const u8 * const orig = in;
