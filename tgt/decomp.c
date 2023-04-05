@@ -44,25 +44,7 @@ enum {
 
 u8 decomp_flat(const u8 *in, u8 *out);
 
-static u8 decomp_1bit(const u8 *in, u8 *out) {
-	const u8 flood = *in & 15;
-	const u8 other = *in >> 4;
-	u8 i, j, val;
-	in++;
-
-	for (i = 0; i < 8; i++) {
-		val = in[i];
-		for (j = 0; j < 8; j++) {
-			if (val & 1)
-				*out++ = other;
-			else
-				*out++ = flood;
-			val >>= 1;
-		}
-	}
-
-	return 9;
-}
+u8 decomp_1bit(const u8 *in, u8 *out);
 
 static u8 decomp_2bit(const u8 *in, u8 *out) {
 	u16 used, val;
