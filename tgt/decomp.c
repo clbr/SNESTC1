@@ -25,24 +25,7 @@ typedef int32_t s32;
 typedef int16_t s16;
 typedef int8_t s8;
 
-static void tochr(const u8 *in, u8 * const out) {
-	u8 x, y;
-	memset(out, 0, 32);
-
-	for (y = 0; y < 8; y++) {
-		for (x = 0; x < 8; x++) {
-			const u8 pix = *in++;
-			if (pix & 1)
-				out[y * 2] |= 1 << (7 - x);
-			if (pix & 2)
-				out[y * 2 + 1] |= 1 << (7 - x);
-			if (pix & 4)
-				out[16 + y * 2] |= 1 << (7 - x);
-			if (pix & 8)
-				out[16 + y * 2 + 1] |= 1 << (7 - x);
-		}
-	}
-}
+void tochr(const u8 *in, u8 * const out);
 
 enum {
 	M_FLAT,
