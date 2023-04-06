@@ -175,8 +175,9 @@ _tochr:
 ; memset(out, 0, 32);
 ;
 	lda     #$00
-	ldy     #$1F
+	ldy     #$0F
 L003A:	sta     (_out),y
+	sta	(_out16),y
 	dey
 	bpl     L003A
 ;
