@@ -51,11 +51,7 @@ u8 decomp_hline(const u8 *in, u8 *out);
 u8 decomp_vline(const u8 *in, u8 *out);
 u8 decomp_commonbyte(const u8 *in, u8 *out);
 u8 decomp_ancestor(const u8 *in, u8 *out, u8 summary);
-
-static u8 decomp_uncompressed(const u8 *in, u8 *out) {
-	memcpy(out, in, 32);
-	return 32;
-}
+u8 decomp_uncompressed(const u8 *in, u8 *out);
 
 typedef u8 (*mfunc)(const u8 *in, u8 *out);
 
