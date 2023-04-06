@@ -68,14 +68,15 @@ static const mfunc methods[NUM_METHODS] = {
 	decomp_uncompressed,
 };
 
+static u8 tmp[128];
+static u16 numtiles;
+
 void stc1_decompress(const u8 *in, u8 *out) {
 
-	u8 tmp[128];
-	u16 numtiles, t;
 	memcpy(&numtiles, in, 2);
 	in += 2;
 
-	for (t = 0; t < numtiles; t++) {
+	for (; numtiles; numtiles--) {
 		const u8 mbyte = *in++;
 		const u8 m = mbyte & 15;
 
