@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-CFLAGS = -t sim65c02 -Oisr
+CFLAGS = -t sim65c02 -Oisr -Ln labs
 SRC = $(wildcard *.c *.s)
 CC = cl65
 
