@@ -49,25 +49,7 @@ u8 decomp_3bit(const u8 *in, u8 *out);
 u8 decomp_rle(const u8 *in, u8 *out);
 u8 decomp_hline(const u8 *in, u8 *out);
 u8 decomp_vline(const u8 *in, u8 *out);
-
-static u8 decomp_commonbyte(const u8 *in, u8 *out) {
-	const u8 * const orig = in;
-	u8 i;
-
-	const u8 cur = *in++;
-	u32 bits;
-	memcpy(&bits, in, 4);
-	in += 4;
-
-	for (i = 0; i < 32; i++) {
-		if (bits & (1UL << i))
-			*out++ = cur;
-		else
-			*out++ = *in++;
-	}
-
-	return in - orig;
-}
+u8 decomp_commonbyte(const u8 *in, u8 *out);
 
 static u8 decomp_ancestor(const u8 *in, u8 *out, u8 summary) {
 	const u8 *src = out;
