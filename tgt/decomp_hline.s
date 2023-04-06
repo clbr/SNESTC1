@@ -30,7 +30,7 @@ _highline = regsave
 .proc	_decomp_hline: near
 
 	sta	_out
-	stx	_out+1
+	sty	_out+1
 
 	jsr	popax
 	sta	_in

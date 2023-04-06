@@ -28,7 +28,7 @@ _bits = regsave
 .proc	_decomp_commonbyte: near
 
 	sta	_out
-	stx	_out+1
+	sty	_out+1
 
 	jsr	popax
 	sta	_in

@@ -26,7 +26,7 @@
 .segment	"RODATA"
 
 _methods:
-	.addr	_decomp_flat
+	.word	$0000
 	.addr	_decomp_1bit
 	.addr	_decomp_2bit
 	.addr	_decomp_3bit
@@ -51,12 +51,20 @@ _mbyte:
 	.res	1,$00
 _m:
 	.res	1,$00
+_tgt:
+	.res	1,$00
 
 ; ---------------------------------------------------------------
 ; void stc1_decompress(const u8 *in, u8 *out);
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
+
+launcher:
+	phx
+	ply
+	ldx	_tgt
+	jmp	(_methods,x)
 
 .proc	_stc1_decompress: near
 
@@ -109,15 +117,18 @@ L001E:	sta     _in
 	stx     _in+1
 	lda     (regsave)
 	sta     _mbyte
+	tax
 ;
 ; m = mbyte & 15;
 ;
 	and     #$0F
 	sta     _m
+	asl
+	sta	_tgt
 ;
 ; mbyte >>= 4;
 ;
-	lda     _mbyte
+	txa
 	lsr     a
 	lsr     a
 	lsr     a
@@ -160,21 +171,7 @@ L001E:	sta     _in
 ;
 ; in += methods[m](in, out);
 ;
-L0059:	lda     _m
-	asl     a
-	bcc     L0057
-	inx
-	clc
-L0057:	adc     #<(_methods)
-	sta     ptr1
-	txa
-	adc     #>(_methods)
-	sta     ptr1+1
-	ldy     #$01
-	lda     (ptr1),y
-	tax
-	lda     (ptr1)
-	jsr     pushax
+L0059:
 	lda     _in
 	ldx     _in+1
 	jsr     pushax
@@ -189,24 +186,12 @@ L005A:	lda     _m
 ;
 ; methods[M_FLAT](&mbyte, tmp);
 ;
-	lda     _methods
-	ldx     _methods+1
-	jsr     pushax
 	lda     #<(_mbyte)
 	ldx     #>(_mbyte)
 	jsr     pushax
 	lda     #<(_tmp)
 	ldx     #>(_tmp)
-	pha
-	ldy     #$02
-	lda     (sp),y
-	sta     jmpvec+1
-	iny
-	lda     (sp),y
-	sta     jmpvec+2
-	pla
-	jsr     jmpvec
-	jsr     incsp2
+	jsr	_decomp_flat
 ;
 ; } else {
 ;
@@ -214,36 +199,15 @@ L005A:	lda     _m
 ;
 ; in += methods[m](in, tmp);
 ;
-L005B:	lda     _m
-	asl     a
-	bcc     L0058
-	inx
-	clc
-L0058:	adc     #<(_methods)
-	sta     ptr1
-	txa
-	adc     #>(_methods)
-	sta     ptr1+1
-	ldy     #$01
-	lda     (ptr1),y
-	tax
-	lda     (ptr1)
-	jsr     pushax
+L005B:
 	lda     _in
 	ldx     _in+1
 	jsr     pushax
 	lda     #<(_tmp)
 	ldx     #>(_tmp)
-L0070:	pha
-	ldy     #$02
-	lda     (sp),y
-	sta     jmpvec+1
-	iny
-	lda     (sp),y
-	sta     jmpvec+2
-	pla
-	jsr     jmpvec
-	jsr     incsp2
+L0070:
+	jsr	launcher
+
 L0066:	clc
 	adc     _in
 	sta     _in

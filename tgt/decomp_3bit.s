@@ -31,7 +31,7 @@ _tab: .res 8
 .proc	_decomp_3bit: near
 
 	sta	_out
-	stx	_out+1
+	sty	_out+1
 
 	jsr	popax
 	sta	_in

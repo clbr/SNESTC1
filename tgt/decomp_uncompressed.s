@@ -24,7 +24,7 @@ _out = ptr2
 .proc	_decomp_uncompressed: near
 
 	sta	_out
-	stx	_out+1
+	sty	_out+1
 
 	jsr	popptr1
 ;

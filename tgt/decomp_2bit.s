@@ -30,7 +30,7 @@ _i = tmp1
 .proc	_decomp_2bit: near
 
 	sta	_out
-	stx	_out+1
+	sty	_out+1
 
 	jsr	popax
 	sta	_in

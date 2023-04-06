@@ -84,7 +84,7 @@ L005C:	sta     _n
 .proc	_decomp_rle: near
 
 	sta	_out
-	stx	_out+1
+	sty	_out+1
 
 	jsr	popax
 	sta	_in
