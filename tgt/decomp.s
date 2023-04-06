@@ -151,19 +151,11 @@ L001E:	sta     _in
 ;
 ; in += decomp_ancestor(in, out, mbyte);
 ;
-	jsr     decsp4
-	lda     _in
-	ldy     #$02
-	sta     (sp),y
-	iny
-	lda     _in+1
-	sta     (sp),y
-	lda     _out
-	sta     (sp)
-	ldy     #$01
-	lda     _out+1
-	sta     (sp),y
-	lda     _mbyte
+	lda	_in
+	ldx	_in+1
+	jsr	pushax
+	lda	_out
+	ldx	_out+1
 	jsr     _decomp_ancestor
 ;
 ; else

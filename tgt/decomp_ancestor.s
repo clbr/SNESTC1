@@ -21,16 +21,13 @@ _origin = ptr1
 _dist = regsave
 
 ; ---------------------------------------------------------------
-; u8 decomp_ancestor(const u8 *in, u8 *out, u8 summary);
+; u8 decomp_ancestor(const u8 *in, u8 *out);
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
 
 .proc	_decomp_ancestor: near
 
-	sta	_summary
-
-	jsr	popax
 	sta	_out
 	sta	_src
 	stx	_out+1
@@ -41,6 +38,9 @@ _dist = regsave
 	sta	_origin
 	stx	_in+1
 	stx	_origin+1
+
+	lda	_mbyte
+	sta	_summary
 ;
 ; src = out;
 ; origin = in;
