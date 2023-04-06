@@ -16,7 +16,6 @@ _in = ptr2
 _out = ptr3
 _out16 = ptr4
 _y = tmp3
-_pix = tmp4
 
 ; ---------------------------------------------------------------
 ; void tochr(const u8 *in, u8 * const out);
@@ -34,9 +33,130 @@ invbits:
 	.byte 1 << 1
 	.byte 1 << 0
 
+tab:
+	.addr val0, val1, val2, val3
+	.addr val4, val5, val6, val7
+	.addr val8, val9, val10, val11
+	.addr val12, val13, val14, val15
+
 .segment	"CODE"
 
-.proc	_tochr: near
+.macro put1
+	ldy     _y
+
+	lda	(_out),y
+	ora	invbits,x
+	sta	(_out),y
+.endmac
+
+.macro put2
+	ldy     _y
+	iny
+
+	lda	(_out),y
+	ora	invbits,x
+	sta	(_out),y
+.endmac
+
+.macro put4
+	ldy     _y
+
+	lda	(_out16),y
+	ora	invbits,x
+	sta	(_out16),y
+.endmac
+
+.macro put8
+	ldy     _y
+	iny
+
+	lda	(_out16),y
+	ora	invbits,x
+	sta	(_out16),y
+.endmac
+
+val0:
+	plx
+	jmp done
+val1:
+	plx
+	put1
+	jmp done
+val2:
+	plx
+	put2
+	jmp done
+val3:
+	plx
+	put1
+	put2
+	jmp done
+val4:
+	plx
+	put4
+	jmp done
+val5:
+	plx
+	put1
+	put4
+	jmp done
+val6:
+	plx
+	put2
+	put4
+	jmp done
+val7:
+	plx
+	put1
+	put2
+	put4
+	jmp done
+val8:
+	plx
+	put8
+	jmp done
+val9:
+	plx
+	put1
+	put8
+	jmp done
+val10:
+	plx
+	put2
+	put8
+	jmp done
+val11:
+	plx
+	put1
+	put2
+	put8
+	jmp done
+val12:
+	plx
+	put4
+	put8
+	jmp done
+val13:
+	plx
+	put1
+	put4
+	put8
+	jmp done
+val14:
+	plx
+	put2
+	put4
+	put8
+	jmp done
+val15:
+	plx
+	put1
+	put2
+	put4
+	put8
+	jmp done
+
+_tochr:
 
 	sta	_out
 	stx	_out+1
@@ -80,74 +200,16 @@ L0040:	cpx     #$08
 ; const u8 pix = *in++;
 ;
 	lda	(_in)
-	sta	_pix
+	asl
+	phx
+	tax
 
 	inc	_in
 	bne	@noinc
 	inc	_in+1
 @noinc:
-;
-; if (pix & 1)
-;
-	lda     _pix
-	and     #$01
-	beq     L0042
-;
-; out[y * 2] |= 1 << (7 - x);
-;
-	ldy     _y
-
-	lda	(_out),y
-	ora	invbits,x
-	sta	(_out),y
-;
-; if (pix & 2)
-;
-L0042:	lda     _pix
-	and     #$02
-	beq     L0044
-;
-; out[y * 2 + 1] |= 1 << (7 - x);
-;
-	ldy     _y
-	iny
-
-	lda	(_out),y
-	ora	invbits,x
-	sta	(_out),y
-;
-; if (pix & 4)
-;
-L0044:	lda     _pix
-	and     #$04
-	beq     L0046
-;
-; out[16 + y * 2] |= 1 << (7 - x);
-;
-	ldy     _y
-
-	lda	(_out16),y
-	ora	invbits,x
-	sta	(_out16),y
-;
-; if (pix & 8)
-;
-L0046:	lda     _pix
-	and     #$08
-	beq     L002E
-;
-; out[16 + y * 2 + 1] |= 1 << (7 - x);
-;
-	ldy     _y
-	iny
-
-	lda	(_out16),y
-	ora	invbits,x
-	sta	(_out16),y
-;
-; }
-;
-L002E:
+	jmp	(tab,x)
+done:
 ;
 ; for (x = 0; x < 8; x++) {
 ;
@@ -159,6 +221,3 @@ L002E:
 L0047:	inc     _y
 	inc	_y
 	jmp     L003F
-
-.endproc
-
