@@ -22,6 +22,7 @@
 	.import		_decomp_ancestor
 	.import		_decomp_uncompressed
 	.export		_stc1_decompress
+	.export		_mbyte
 
 .segment	"RODATA"
 
@@ -186,9 +187,6 @@ L005A:	lda     _m
 ;
 ; methods[M_FLAT](&mbyte, tmp);
 ;
-	lda     #<(_mbyte)
-	ldx     #>(_mbyte)
-	jsr     pushax
 	lda     #<(_tmp)
 	ldx     #>(_tmp)
 	jsr	_decomp_flat

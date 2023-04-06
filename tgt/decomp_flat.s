@@ -14,11 +14,10 @@
 
 .segment	"BSS"
 
-_in = ptr2
 _out = ptr3
 
 ; ---------------------------------------------------------------
-; u8 decomp_flat(const u8 *in, u8 *out);
+; u8 decomp_flat(u8 *out);
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
@@ -28,13 +27,10 @@ _out = ptr3
 	sta	_out
 	stx	_out+1
 
-	jsr	popax
-	sta	_in
-	stx	_in+1
 ;
 ; memset(out, *in, 64);
 ;
-	lda	(_in)
+	lda	_mbyte
 
 	ldy	#$3F
 @loop:	sta	(_out),y
