@@ -50,50 +50,7 @@ u8 decomp_rle(const u8 *in, u8 *out);
 u8 decomp_hline(const u8 *in, u8 *out);
 u8 decomp_vline(const u8 *in, u8 *out);
 u8 decomp_commonbyte(const u8 *in, u8 *out);
-
-static u8 decomp_ancestor(const u8 *in, u8 *out, u8 summary) {
-	const u8 *src = out;
-	const u8 * const origin = in;
-	const u8 *val;
-	u8 i, s;
-
-	u16 dist = 0;
-	do {
-		i = *in++;
-		dist += i;
-	} while (i == 255);
-	dist++;
-	src -= 32 * dist;
-
-	memcpy(out, src, 32);
-
-	val = in;
-
-	if (summary & 1)
-		in++;
-	if (summary & 2)
-		in++;
-	if (summary & 4)
-		in++;
-	if (summary & 8)
-		in++;
-
-	for (s = 0; s < 4; s++) {
-		if (summary & 1 << s) {
-			for (i = 0; i < 8; i++) {
-				if (*val & 1 << i)
-					*out++ = *in++;
-				else
-					out++;
-			}
-			val++;
-		} else {
-			out += 8;
-		}
-	}
-
-	return in - origin;
-}
+u8 decomp_ancestor(const u8 *in, u8 *out, u8 summary);
 
 static u8 decomp_uncompressed(const u8 *in, u8 *out) {
 	memcpy(out, in, 32);

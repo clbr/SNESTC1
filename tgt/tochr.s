@@ -10,7 +10,6 @@
 	.importzp	sp, sreg, regsave, regbank
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
-	.import		_memset
 	.export		_tochr
 
 _in = ptr2
