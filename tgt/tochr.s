@@ -14,6 +14,7 @@
 
 _in = ptr2
 _out = ptr3
+_out16 = ptr4
 _y = tmp3
 _pix = tmp4
 
@@ -40,6 +41,13 @@ invbits:
 	sta	_out
 	stx	_out+1
 
+	clc
+	adc	#16
+	sta	_out16
+	txa
+	adc	#0
+	sta	_out16+1
+
 	jsr	popax
 	sta	_in
 	stx	_in+1
@@ -56,7 +64,7 @@ L003A:	sta     (_out),y
 ;
 	stz     _y
 L003F:	lda     _y
-	cmp     #$08
+	cmp     #16
 	bcc     L0048
 ;
 ; }
@@ -87,9 +95,7 @@ L0040:	cpx     #$08
 ;
 ; out[y * 2] |= 1 << (7 - x);
 ;
-	lda     _y
-	asl     a
-	tay
+	ldy     _y
 
 	lda	(_out),y
 	ora	invbits,x
@@ -103,10 +109,8 @@ L0042:	lda     _pix
 ;
 ; out[y * 2 + 1] |= 1 << (7 - x);
 ;
-	lda     _y
-	asl     a
-	ina
-	tay
+	ldy     _y
+	iny
 
 	lda	(_out),y
 	ora	invbits,x
@@ -120,15 +124,11 @@ L0044:	lda     _pix
 ;
 ; out[16 + y * 2] |= 1 << (7 - x);
 ;
-	lda     _y
-	asl     a
-	clc
-	adc	#16
-	tay
+	ldy     _y
 
-	lda	(_out),y
+	lda	(_out16),y
 	ora	invbits,x
-	sta	(_out),y
+	sta	(_out16),y
 ;
 ; if (pix & 8)
 ;
@@ -138,15 +138,12 @@ L0046:	lda     _pix
 ;
 ; out[16 + y * 2 + 1] |= 1 << (7 - x);
 ;
-	lda     _y
-	asl     a
-	clc
-	adc	#17
-	tay
+	ldy     _y
+	iny
 
-	lda	(_out),y
+	lda	(_out16),y
 	ora	invbits,x
-	sta	(_out),y
+	sta	(_out16),y
 ;
 ; }
 ;
@@ -160,6 +157,7 @@ L002E:
 ; for (y = 0; y < 8; y++) {
 ;
 L0047:	inc     _y
+	inc	_y
 	jmp     L003F
 
 .endproc
