@@ -32,13 +32,9 @@ _out = ptr3
 	sta	_in
 	stx	_in+1
 ;
-; memset(out, *in >> 4, 64);
+; memset(out, *in, 64);
 ;
 	lda	(_in)
-	lsr     a
-	lsr     a
-	lsr     a
-	lsr     a
 
 	ldy	#$3F
 @loop:	sta	(_out),y
