@@ -62,22 +62,24 @@ L0009:	ldx	#0
 ; if (used & (1 << i))
 ; tab[cur++] = i;
 ;
-.repeat 8, I
 	lda	_used
+.repeat 8, I
 	bit	#1 << I
 	beq	:+
 		lda #I
 		sta _tab,x
 		inx
+		lda	_used
 	:
 .endrepeat
-.repeat 8, I
 	lda	_used+1
+.repeat 8, I
 	bit	#1 << I
 	beq	:+
 		lda #I+8
 		sta _tab,x
 		inx
+		lda	_used+1
 	:
 .endrepeat
 
