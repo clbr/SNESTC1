@@ -182,8 +182,8 @@ L003A:	sta     (_out),y
 ;
 ; for (y = 0; y < 8; y++) {
 ;
-	stz     _y
-L003F:	lda     _y
+	lda	#0
+L003F:	sta     _y
 	cmp     #16
 	bcc     L0048
 ;
@@ -218,6 +218,7 @@ done:
 ;
 ; for (y = 0; y < 8; y++) {
 ;
-L0047:	inc     _y
-	inc	_y
+L0047:	lda	_y
+	ina
+	ina
 	jmp     L003F
