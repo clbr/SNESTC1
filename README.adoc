@@ -25,3 +25,10 @@ Comparison on one game's BG graphics, 1943680 bytes total:
 |SNESTC1 + gzip	| 1086042		| 56
 |SNESTC1 + LZO	| 1078091		| 55
 |============================================
+
+Gzip decompression takes about 12200 cycles per tile.
+SNESTC1 takes 6436 cycles per tile on average, being about twice as fast
+(measured with the 65c02 code).
+
+This means that decompressing 500 tiles would take ~1.2s on slowROM and
+~0.9s on fastROM.
