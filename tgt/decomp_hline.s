@@ -18,7 +18,14 @@ _out = passout
 _orig = ptr4
 _val = tmp1
 _i = tmp2
-_highline = regsave
+_highline0 = regsave
+_highline1 = regsave+1
+_highline2 = regsave+2
+_highline3 = regsave+3
+_highline4 = ptr1
+_highline5 = ptr1+1
+_highline6 = ptr2
+_highline7 = ptr2+1
 
 ; ---------------------------------------------------------------
 ; u8 decomp_hline(const u8 *in, u8 *out);
@@ -48,16 +55,51 @@ _highline = regsave
 ; memcpy(highline, in, 4);
 ;
 	lda	(_in)
-	sta	_highline
+	tax
+	and	#$0F
+	sta	_highline0
+	txa
+	lsr
+	lsr
+	lsr
+	lsr
+	sta	_highline1
+
 	ldy	#1
 	lda	(_in),y
-	sta	_highline+1
+	tax
+	and	#$0F
+	sta	_highline2
+	txa
+	lsr
+	lsr
+	lsr
+	lsr
+	sta	_highline3
+
 	iny
 	lda	(_in),y
-	sta	_highline+2
+	tax
+	and	#$0F
+	sta	_highline4
+	txa
+	lsr
+	lsr
+	lsr
+	lsr
+	sta	_highline5
+
 	iny
 	lda	(_in),y
-	sta	_highline+3
+	tax
+	and	#$0F
+	sta	_highline6
+	txa
+	lsr
+	lsr
+	lsr
+	lsr
+	sta	_highline7
 ;
 ; in += 4;
 ;
@@ -83,97 +125,56 @@ L005F:	lda     _i
 ;
 ; *out++ = highline[0] & 15;
 ;
-	lda     _highline
-	tay
-	and     #$0F
+	lda     _highline0
 	sta	(_out)
-	inc	_out
-	bne	:+
-	inc	_out+1
-:
 ;
 ; *out++ = highline[0] >> 4;
 ;
-	tya
-	lsr
-	lsr
-	lsr
-	lsr
-	sta	(_out)
-	inc	_out
-	bne	:+
-	inc	_out+1
-:
+	lda	_highline1
+	ldy	#1
+	sta	(_out),y
 ;
 ; *out++ = highline[1] & 15;
 ;
-	lda	_highline+1
-	tay
-	and	#$0F
-	sta	(_out)
-	inc	_out
-	bne	:+
-	inc	_out+1
-:
+	lda	_highline2
+	iny
+	sta	(_out),y
 ;
 ; *out++ = highline[1] >> 4;
 ;
-	tya
-	lsr
-	lsr
-	lsr
-	lsr
-	sta	(_out)
-	inc	_out
-	bne	:+
-	inc	_out+1
-:
+	lda	_highline3
+	iny
+	sta	(_out),y
 ;
 ; *out++ = highline[2] & 15;
 ;
-	lda	_highline+2
-	tay
-	and	#$0F
-	sta	(_out)
-	inc	_out
-	bne	:+
-	inc	_out+1
-:
+	lda	_highline4
+	iny
+	sta	(_out),y
 ;
 ; *out++ = highline[2] >> 4;
 ;
-	tya
-	lsr
-	lsr
-	lsr
-	lsr
-	sta	(_out)
-	inc	_out
-	bne	:+
-	inc	_out+1
-:
+	lda	_highline5
+	iny
+	sta	(_out),y
 ;
 ; *out++ = highline[3] & 15;
 ;
-	lda	_highline+3
-	tay
-	and	#$0F
-	sta	(_out)
-	inc	_out
-	bne	:+
-	inc	_out+1
-:
+	lda	_highline6
+	iny
+	sta	(_out),y
 ;
 ; *out++ = highline[3] >> 4;
 ;
-	tya
-	lsr
-	lsr
-	lsr
-	lsr
-	sta	(_out)
-	inc	_out
-	bne	:+
+	lda	_highline7
+	iny
+	sta	(_out),y
+
+	lda	#8
+	clc
+	adc	_out
+	sta	_out
+	bcc	:+
 	inc	_out+1
 :
 ;
