@@ -11,8 +11,9 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.export		_tochr
+	.importzp	passin
 
-_in = ptr2
+_in = passin
 _out = ptr3
 _out16 = ptr4
 _y = tmp3
@@ -167,10 +168,6 @@ _tochr:
 	txa
 	adc	#0
 	sta	_out16+1
-
-	jsr	popax
-	sta	_in
-	stx	_in+1
 ;
 ; memset(out, 0, 32);
 ;

@@ -242,11 +242,10 @@ L0046:	lda     _tmp,y
 	lda     #<(_tmp+64)
 	sec
 	sbc     _mbyte
-	pha
+	sta	passin
 	lda     #>(_tmp+64)
 	sbc     #$00
-	tax
-	pla
+	sta	passin+1
 ;
 ; } else if (m < M_HLINE) {
 ;
@@ -259,7 +258,9 @@ L005D:	lda     _m
 ;
 	lda     #<(_tmp)
 	ldx     #>(_tmp)
-L0063:	jsr     pushax
+	sta	passin
+	stx	passin+1
+L0063:
 	lda     _out
 	ldx     _out+1
 	jsr     _tochr
