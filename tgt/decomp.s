@@ -27,7 +27,6 @@
 .segment	"RODATA"
 
 _methods:
-	.word	$0000
 	.addr	_decomp_1bit
 	.addr	_decomp_2bit
 	.addr	_decomp_3bit
@@ -65,7 +64,7 @@ launcher:
 	phx
 	ply
 	ldx	_tgt
-	jmp	(_methods,x)
+	jmp	(_methods-2,x)
 
 .proc	_stc1_decompress: near
 
