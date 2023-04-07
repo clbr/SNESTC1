@@ -71,9 +71,8 @@ L002A:	cpx     #$08
 ;
 ; if (val & 1)
 ;
-	lda     _val
-	and     #$01
-	beq     L001B
+	lsr     _val
+	bcc     L001B
 ;
 ; *out++ = other;
 ;
@@ -94,7 +93,6 @@ L002D:	sta     (_out)
 ;
 ; val >>= 1;
 ;
-	lsr     _val
 ;
 ; for (j = 0; j < 8; j++) {
 ;
