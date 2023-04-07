@@ -11,11 +11,10 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.export		_decomp_3bit
+	.importzp	passin, passout
 
-.segment	"BSS"
-
-_in = ptr2
-_out = ptr3
+_in = passin
+_out = passout
 _used = ptr1
 _val = regsave
 _i = tmp1
@@ -30,12 +29,6 @@ _tab: .res 8
 
 .proc	_decomp_3bit: near
 
-	sta	_out
-	sty	_out+1
-
-	jsr	popax
-	sta	_in
-	stx	_in+1
 ;
 ; memcpy(&used, in, 2);
 ;

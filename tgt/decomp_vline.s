@@ -11,11 +11,10 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.export		_decomp_vline
+	.importzp	passin, passout
 
-.segment	"BSS"
-
-_in = ptr2
-_out = ptr3
+_in = passin
+_out = passout
 _orig = ptr4
 _val = tmp1
 _i = tmp2
@@ -29,13 +28,9 @@ _highline = regsave
 
 .proc	_decomp_vline: near
 
-	sta	_out
-	sty	_out+1
-
-	jsr	popax
-	sta	_in
+	lda	_in
 	sta	_orig
-	stx	_in+1
+	ldx	_in+1
 	stx	_orig+1
 ;
 ; orig = in;

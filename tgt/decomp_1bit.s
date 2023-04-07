@@ -11,11 +11,10 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.export		_decomp_1bit
+	.importzp	passin, passout
 
-.segment	"BSS"
-
-_in = ptr2
-_out = ptr3
+_in = passin
+_out = passout
 _flood = ptr4
 _other = ptr4+1
 _i = tmp1
@@ -29,12 +28,6 @@ _val = tmp3
 
 .proc	_decomp_1bit: near
 
-	sta	_out
-	sty	_out+1
-
-	jsr	popax
-	sta	_in
-	stx	_in+1
 ;
 ; flood = *in & 15;
 ;

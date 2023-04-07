@@ -11,10 +11,9 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.export		_decomp_flat
+	.importzp	passout
 
-.segment	"BSS"
-
-_out = ptr3
+_out = passout
 
 ; ---------------------------------------------------------------
 ; u8 decomp_flat(u8 *out);
@@ -23,9 +22,6 @@ _out = ptr3
 .segment	"CODE"
 
 .proc	_decomp_flat: near
-
-	sta	_out
-	stx	_out+1
 
 ;
 ; memset(out, *in, 64);

@@ -23,6 +23,7 @@
 	.import		_decomp_uncompressed
 	.export		_stc1_decompress
 	.export		_mbyte
+	.exportzp	passin, passout
 
 .segment	"RODATA"
 
@@ -36,6 +37,13 @@ _methods:
 	.addr	_decomp_commonbyte
 	.word	$0000
 	.addr	_decomp_uncompressed
+
+.segment	"ZEROPAGE"
+
+passin:
+	.res 2
+passout:
+	.res 2
 
 .segment	"BSS"
 
@@ -61,8 +69,6 @@ _tgt:
 .segment	"CODE"
 
 launcher:
-	phx
-	ply
 	ldx	_tgt
 	jmp	(_methods-2,x)
 
@@ -152,9 +158,12 @@ L001E:	sta     _in
 ;
 	lda	_in
 	ldx	_in+1
-	jsr	pushax
+	sta	passin
+	stx	passin+1
 	lda	_out
 	ldx	_out+1
+	sta	passout
+	stx	passout+1
 	jsr     _decomp_ancestor
 ;
 ; else
@@ -166,9 +175,12 @@ L001E:	sta     _in
 L0059:
 	lda     _in
 	ldx     _in+1
-	jsr     pushax
+	sta	passin
+	stx	passin+1
 	lda     _out
 	ldx     _out+1
+	sta	passout
+	stx	passout+1
 ;
 ; } else if (m == M_FLAT) {
 ;
@@ -180,6 +192,8 @@ L005A:	lda     _m
 ;
 	lda     #<(_tmp)
 	ldx     #>(_tmp)
+	sta	passout
+	stx	passout+1
 	jsr	_decomp_flat
 ;
 ; } else {
@@ -191,9 +205,12 @@ L005A:	lda     _m
 L005B:
 	lda     _in
 	ldx     _in+1
-	jsr     pushax
+	sta	passin
+	stx	passin+1
 	lda     #<(_tmp)
 	ldx     #>(_tmp)
+	sta	passout
+	stx	passout+1
 L0070:
 	jsr	launcher
 

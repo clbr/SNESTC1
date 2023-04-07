@@ -11,9 +11,10 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.export		_decomp_ancestor
+	.importzp	passin, passout
 
-_in = ptr2
-_out = ptr3
+_in = passin
+_out = passout
 _src = ptr4 ; share the area, they don't overlap
 _val = ptr4 ;
 _summary = tmp2
@@ -28,15 +29,14 @@ _dist = regsave
 
 .proc	_decomp_ancestor: near
 
-	sta	_out
+	lda	_out
 	sta	_src
-	stx	_out+1
+	ldx	_out+1
 	stx	_src+1
 
-	jsr	popax
-	sta	_in
+	lda	_in
 	sta	_origin
-	stx	_in+1
+	ldx	_in+1
 	stx	_origin+1
 
 	lda	_mbyte

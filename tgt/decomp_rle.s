@@ -11,11 +11,10 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.export		_decomp_rle
+	.importzp	passin, passout
 
-.segment	"BSS"
-
-_in = ptr2
-_out = ptr3
+_in = passin
+_out = passout
 _orig = ptr4
 _wrote = ptr1
 _cur = ptr1+1
@@ -83,13 +82,9 @@ L005C:	sta     _n
 
 .proc	_decomp_rle: near
 
-	sta	_out
-	sty	_out+1
-
-	jsr	popax
-	sta	_in
+	lda	_in
 	sta	_orig
-	stx	_in+1
+	ldx	_in+1
 	stx	_orig+1
 ;
 ; orig = in;

@@ -11,9 +11,10 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 	.export		_decomp_uncompressed
+	.importzp	passin, passout
 
-_in = ptr1
-_out = ptr2
+_in = passin
+_out = passout
 
 ; ---------------------------------------------------------------
 ; u8 decomp_uncompressed(const u8 *in, u8 *out);
@@ -23,10 +24,6 @@ _out = ptr2
 
 .proc	_decomp_uncompressed: near
 
-	sta	_out
-	sty	_out+1
-
-	jsr	popptr1
 ;
 ; memcpy(out, in, 32);
 ;
