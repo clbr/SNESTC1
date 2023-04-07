@@ -18,7 +18,14 @@ _out = passout
 _orig = ptr4
 _val = tmp1
 _i = tmp2
-_highline = regsave
+_highline0 = regsave
+_highline1 = regsave+1
+_highline2 = regsave+2
+_highline3 = regsave+3
+_highline4 = ptr1
+_highline5 = ptr1+1
+_highline6 = ptr2
+_highline7 = ptr2+2
 
 ; ---------------------------------------------------------------
 ; u8 decomp_vline(const u8 *in, u8 *out);
@@ -48,16 +55,51 @@ _highline = regsave
 ; memcpy(highline, in, 4);
 ;
 	lda	(_in)
-	sta	_highline
+	tax
+	and	#$0F
+	sta	_highline0
+	txa
+	lsr
+	lsr
+	lsr
+	lsr
+	sta	_highline1
+
 	ldy	#1
 	lda	(_in),y
-	sta	_highline+1
+	tax
+	and	#$0F
+	sta	_highline2
+	txa
+	lsr
+	lsr
+	lsr
+	lsr
+	sta	_highline3
+
 	iny
 	lda	(_in),y
-	sta	_highline+2
+	tax
+	and	#$0F
+	sta	_highline4
+	txa
+	lsr
+	lsr
+	lsr
+	lsr
+	sta	_highline5
+
 	iny
 	lda	(_in),y
-	sta	_highline+3
+	tax
+	and	#$0F
+	sta	_highline6
+	txa
+	lsr
+	lsr
+	lsr
+	lsr
+	sta	_highline7
 ;
 ; in += 4;
 ;
@@ -77,78 +119,53 @@ L005F:	lda     _i
 ;
 ; if (val & (1 << i)) {
 ;
-	lda     _val
-	and     #1
-	jeq     L0017
+	lsr     _val
+	bcc     L0017
 ;
 ; out[0 * 8 + i] = highline[0] & 15;
 ;
-	lda     _highline
-	tax
-	and     #$0F
+	lda     _highline0
 	sta	(_out)
 ;
 ; out[1 * 8 + i] = highline[0] >> 4;
 ;
-	txa
-	lsr
-	lsr
-	lsr
-	lsr
+	lda	_highline1
 	ldy	#8
 	sta	(_out),y
 ;
 ; out[2 * 8 + i] = highline[1] & 15;
 ;
-	lda	_highline+1
-	tax
-	and	#$0F
+	lda	_highline2
 	ldy	#16
 	sta	(_out),y
 ;
 ; out[3 * 8 + i] = highline[1] >> 4;
 ;
-	txa
-	lsr
-	lsr
-	lsr
-	lsr
+	lda	_highline3
 	ldy	#24
 	sta	(_out),y
 ;
 ; out[4 * 8 + i] = highline[2] & 15;
 ;
-	lda	_highline+2
-	tax
-	and	#$0F
+	lda	_highline4
 	ldy	#32
 	sta	(_out),y
 ;
 ; out[5 * 8 + i] = highline[2] >> 4;
 ;
-	txa
-	lsr
-	lsr
-	lsr
-	lsr
+	lda	_highline5
 	ldy	#40
 	sta	(_out),y
 ;
 ; out[6 * 8 + i] = highline[3] & 15;
 ;
-	lda	_highline+3
-	tax
-	and	#$0F
+	lda	_highline6
 	ldy	#48
 	sta	(_out),y
 ;
 ; out[7 * 8 + i] = highline[3] >> 4;
 ;
-	txa
-	lsr
-	lsr
-	lsr
-	lsr
+	lda	_highline7
 	ldy	#56
 	sta	(_out),y
 ;
@@ -242,7 +259,6 @@ L0017:	lda     (_in)
 ; for (i = 0; i < 8; i++) {
 ;
 L0060:	inc     _i
-	lsr	_val
 	inc	_out
 	bne	:+
 	inc	_out+1
@@ -259,4 +275,3 @@ L0010:	lda     _in
 	rts
 
 .endproc
-
